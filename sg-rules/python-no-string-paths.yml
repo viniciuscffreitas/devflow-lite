@@ -1,0 +1,11 @@
+id: python-no-string-paths
+language: python
+severity: warning
+message: "Use pathlib.Path() instead of building paths via string concatenation."
+files:
+  - "**/*.py"
+ignores:
+  - "**/tests/**"
+  - "scripts/**"
+rule:
+  pattern: $A + "/" + $B

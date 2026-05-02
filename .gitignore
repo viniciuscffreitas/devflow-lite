@@ -1,0 +1,17 @@
+**/__pycache__/
+**/*.egg-info/
+state/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.git.bak-*/
+telemetry/devflow.db
+telemetry/devflow.db.bak-*
+telemetry/secrets_blocked.log
+telemetry/sessions.jsonl
+telemetry/boundary_worker.log
+telemetry/judge_forensics/
+logs/
+instincts/
+sandbox-output/
+/tmp/shadow-dogfood/

@@ -1,0 +1,15 @@
+id: python-no-os-path-join
+language: python
+severity: warning
+message: "os.path.join is forbidden. Use pathlib.Path operators."
+files:
+  - "**/*.py"
+ignores:
+  - "**/tests/**"
+  - "scripts/**"
+rule:
+  any:
+    - pattern: os.path.join($$$)
+    - pattern: os.path.dirname($$$)
+    - pattern: os.path.basename($$$)
+    - pattern: os.path.exists($$$)
