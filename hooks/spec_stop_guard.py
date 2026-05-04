@@ -50,7 +50,7 @@ def _check(marker: Path, cwd: str) -> tuple[bool, str]:
         return False, ""
 
     status = data.get("status", "")
-    if status == "COMPLETED":
+    if status in ("COMPLETED", "ABORTED"):
         marker.unlink(missing_ok=True)
         return False, ""
     if status not in ("IMPLEMENTING", "PENDING", "in_progress"):
