@@ -1,13 +1,12 @@
 """stop_dispatcher_slim.py — single Stop entry point for devflow-lite.
 
 Runs (in order, sync):
-  1. phase_finalize    — writes COMPLETED marker
-  2. pr_template       — drafts PR body for current branch
-  3. post_task_judge   — LLM verdict on the diff (PASS/WARN/FAIL)
+  1. spec_stop_guard   — blocks Stop while active spec is PENDING/IMPLEMENTING
+  2. phase_finalize    — writes COMPLETED marker
 
 Replaces the 376-LOC dispatcher of devflow-cloud which orchestrated
-6 hooks plus shadow audit, instinct capture, cost tracking and
-boundary detection — none of which are part of lite.
+multiple Stop-tier hooks plus shadow audit, instinct capture, cost
+tracking and boundary detection — none of which are part of lite.
 """
 
 from __future__ import annotations
@@ -27,7 +26,7 @@ from _stdin_cache import get as _cache_get  # noqa: E402
 
 _STATE_BASE = Path.home() / ".claude/devflow-lite/state"
 
-_PIPELINE = ["spec_stop_guard", "phase_finalize", "pr_template", "post_task_judge"]
+_PIPELINE = ["spec_stop_guard", "phase_finalize"]
 
 
 def _log_hook(
