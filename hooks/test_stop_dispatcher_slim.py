@@ -35,8 +35,9 @@ def _reset_stdin_cache():
     _stdin_cache.reset()
 
 
-def test_pipeline_order_is_phase_then_pr_then_judge(mod):
-    assert mod._PIPELINE == ["spec_stop_guard", "phase_finalize", "pr_template", "post_task_judge"]
+def test_pipeline_contains_only_active_hooks(mod):
+    """Pipeline must list only hooks that exist on disk and are not inert."""
+    assert mod._PIPELINE == ["spec_stop_guard", "phase_finalize"]
 
 
 def test_run_calls_each_hook(mod, monkeypatch):
@@ -53,8 +54,6 @@ def test_run_calls_each_hook(mod, monkeypatch):
     assert [c[0] for c in calls] == [
         "spec_stop_guard",
         "phase_finalize",
-        "pr_template",
-        "post_task_judge",
     ]
     assert all(c[1] == "x" for c in calls)
 
@@ -69,7 +68,7 @@ def test_failing_hook_does_not_short_circuit(mod, monkeypatch):
 
     monkeypatch.setattr(mod, "_run", fake_run)
     rc = mod.main()
-    assert calls == ["spec_stop_guard", "phase_finalize", "pr_template", "post_task_judge"]
+    assert calls == ["spec_stop_guard", "phase_finalize"]
     assert rc == 2
 
 
@@ -105,8 +104,6 @@ def test_dispatcher_log_written_per_hook(mod, monkeypatch, tmp_path):
     assert [e["hook"] for e in lines] == [
         "spec_stop_guard",
         "phase_finalize",
-        "pr_template",
-        "post_task_judge",
     ]
     assert all(isinstance(e["elapsed_ms"], int) for e in lines)
 

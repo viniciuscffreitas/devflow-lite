@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "devflow"
+name = "devflow-lite"
 version = "0.2.1"
-description = "DevFlow — governance harness + Knowledge Base SDK for Claude Code."
+description = "DevFlow Lite — slim guardrail harness for Claude Code (no telemetry, no cloud, no LLM judge)."
 requires-python = ">=3.12"
 readme = "README.md"
 license = { text = "MIT" }
@@ -19,61 +19,20 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-    "httpx>=0.27.0",
-]
-
-[project.optional-dependencies]
-shadow = ["devflow-sandbox"]
-dashboard = [
-    "streamlit>=1.39.0",
-    "pandas>=2.2.0",
-    "streamlit-autorefresh>=1.0.1",
-]
-cloud-client = ["httpx>=0.27.0"]
-cloud-server = [
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.32.0",
-    "python-multipart>=0.0.18",
-    "argon2-cffi>=23.1.0",
-    "pydantic>=2.9.0",
-]
-
-[project.scripts]
-devflow-init = "scripts.devflow_init:main"
+dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/viniciuscffreitas/devflow"
 Repository = "https://github.com/viniciuscffreitas/devflow"
 
 [tool.setuptools]
-# Flat layout: each top-level dir is a package. Kept as explicit list
-# instead of `find:` because the repo also contains non-code directories
-# (docs/, logs/, state/, sg-rules/, releases/, artifacts/, etc.) that
-# must never be packaged.
 packages = [
     "devflow",
-    "agents",
-    "analysis",
-    "cloud_server",
-    "dashboard",
     "hooks",
-    "judge",
-    "knowledge",
-    "knowledge.seed",
     "linters",
-    "mcp",
-    "risk",
     "scripts",
-    "telemetry",
 ]
 include-package-data = true
-
-[tool.setuptools.package-data]
-knowledge = ["schema.sql"]
-
-[tool.uv.sources]
-devflow-sandbox = { path = "../devflow-shadow-runner", editable = true }
 
 [dependency-groups]
 dev = [

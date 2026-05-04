@@ -4,7 +4,7 @@
 
 **Slim governance harness for Claude Code.**
 
-*Code quality + git collaboration. No telemetry. No cloud. ~3k LOC of hooks that catch the things you'd catch on a good code review.*
+*Code quality + git collaboration. No telemetry. No cloud. ~4800 LOC of hooks that catch the things you'd catch on a good code review.*
 
 [![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://python.org)
 [![Tests](https://img.shields.io/badge/tests-123-brightgreen.svg)](#tests)
@@ -40,7 +40,7 @@ You write code with Claude. The hooks intercept the moments where things go wron
 - **Compaction wiped the plan?** Restored on the next session start.
 - **Stop hooks ran?** Per-hook timing logged, so `/devflow status` can tell you what was slow.
 
-That's the whole product. No dashboards, no cloud sandbox, no LLM judge writing patches back to your tree.
+That's the whole product. No dashboards. No cloud sandbox. No LLM judge — the harness blocks bad inputs at the gate, then trusts the agent and your existing CI/test suite to grade outputs.
 
 ---
 
@@ -62,7 +62,7 @@ That's the whole product. No dashboards, no cloud sandbox, no LLM judge writing 
 | **pre_edit_overwrite_guard** | pre-edit | Stale read → overwrite. |
 | **discovery_scan** + **repo_conventions** + **freshness_check** | SessionStart | Detects toolchain, default branch, `pull.rebase`, signed commits, PR template, CODEOWNERS, stale `git fetch`. |
 | **spec_phase_tracker** + **spec_stop_guard** | UserPromptSubmit / Stop | `/spec` lifecycle: PENDING → IMPLEMENTING → COMPLETED. Blocks Stop while spec is open. |
-| **stop_dispatcher** → **phase_finalize** + **pr_template** + **post_task_judge** | Stop | Per-hook timing log, PR draft, exit gate. |
+| **stop_dispatcher** → **spec_stop_guard** + **phase_finalize** | Stop | Per-hook timing log, blocks exit while a spec is open, writes COMPLETED marker. |
 | **pre_compact** + **post_compact_restore** + **context_monitor** | PreCompact / SessionStart | Plan + cwd + state survive compaction. |
 
 All hooks are vanilla Python. No daemon. No background process. Read stdin, decide, exit.
@@ -141,7 +141,7 @@ bash ~/.claude/devflow-lite/uninstall.sh
 
 | | devflow | devflow-lite |
 |---|---------|--------------|
-| LOC | ~23k | ~3k |
+| LOC | ~23k | ~4800 |
 | Cloud | VPS + sandbox + heal loop + PR comments | none |
 | Telemetry | SQLite, 54-col schema, dashboard | none |
 | MCP server | `evaluate_task` / `get_task_health` / `apply_devflow_governance` | none |
