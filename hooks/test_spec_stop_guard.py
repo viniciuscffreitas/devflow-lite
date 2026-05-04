@@ -175,3 +175,19 @@ def test_unknown_status_does_not_block(state, tmp_path):
     rc, out = _run(mod, {"cwd": cwd})
     assert rc == 0
     assert out == ""
+
+
+def test_aborted_status_does_not_block_exit(state, tmp_path):
+    """devflow-agent writes ABORTED on kill; guard must let exit through."""
+    mod = _load(state)
+    cwd = str(tmp_path)
+    marker = _write_marker(state, "sess-A", {
+        "status": "ABORTED",
+        "plan_path": "x",
+        "started_at": int(time.time()),
+        "cwd": cwd,
+    })
+    rc, out = _run(mod, {"cwd": cwd})
+    assert rc == 0
+    assert out == ""
+    assert not marker.exists()
