@@ -1,9 +1,12 @@
 """branch_policy.py — PreToolUse Bash hook.
 
 Blocks pushes that violate team workflow:
-  - direct push to main/master/develop/release/* (always blocked)
+  - direct push to main/master/develop/release/* (blocked unless allow_push_to_main=true)
   - force-push to a branch you do not own (blocked unless --force-with-lease and you authored last commit)
   - non-conventional branch name on push -u (warn only)
+
+Project override: set {"allow_push_to_main": true} in .devflow-config.json to permit
+direct pushes to main (e.g. solo repos with 100% autonomy granted).
 
 Exit codes: 0 ok, 2 block (Claude Code surfaces stderr).
 """
@@ -16,7 +19,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _util import read_hook_stdin
+from _util import load_devflow_config, read_hook_stdin
 
 
 PROTECTED = re.compile(r"^(main|master|develop|release/.*|hotfix/.*)$")
@@ -67,11 +70,14 @@ def main() -> int:
     if not cmd or "git push" not in cmd:
         return 0
 
+    cfg = load_devflow_config(Path(cwd) if cwd else None)
+    allow_push_to_main: bool = bool(cfg.get("allow_push_to_main", False))
+
     _, target = _parse_push_target(cmd)
     current = _git("rev-parse", "--abbrev-ref", "HEAD", cwd=cwd) or target
     branch = target or current
 
-    if PROTECTED.match(branch):
+    if PROTECTED.match(branch) and not allow_push_to_main:
         _block(f"push to protected branch '{branch}' is forbidden — open a PR")
 
     if "--force" in cmd and "--force-with-lease" not in cmd:
